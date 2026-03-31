@@ -1,0 +1,16 @@
+:root, :root.theme-light {
+    --theme-blueberry-blueberry: #3584e4;
+    --theme-blueberry-grape: #894dbd;
+    --theme-blueberry-apple: #4cc417;
+    --theme-blueberry-pineapple: #fab621;
+    --theme-blueberry-cherry: #f36;
+    --theme-blueberry-cell: #f5f5f5;
+    --theme-blueberry-error-text: rgb(243, 34, 139);
+    --theme-blueberry-error-cell: rgb(250, 216, 233);
+    --theme-blueberry-block-outline: #000;
+    --theme-blueberry-clue-text-inside-board: #000;
+    --theme-blueberry-clue-text-inside-board-opened: #000;
+    --theme-blueberry-clue-text-outside-board: var(--theme-text);
+    --theme-blueberry-grid-lines-thin: #888;
+    --theme-blueberry-clue-rect-stroke: coral;
+}
