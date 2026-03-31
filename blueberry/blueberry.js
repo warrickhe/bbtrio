@@ -395,7 +395,7 @@ BLUEBERRY.getPuzzleId = (desc) => {
     return desc;
 };
 BLUEBERRY.createView = (model, state, scale, isSolution) => {
-    const graphics_folder = '2';
+    const graphics_folder = 'assets';
     const graphics_ext = 'png';
     scale = scale ?? 1;
     scale *= 1.25;

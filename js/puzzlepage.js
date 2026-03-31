@@ -33,50 +33,21 @@ function createDailyPuzzlePage(
     iconURL,
     title,
     helpEl,
-    today,
     genreID,
     genre,
     puzzleCategories,
-    puzzlesByCategory,
-    isPlusOnly)
+    puzzlesByCategory)
 {
     handlePortraitOrLandscape(440, 720);
-    // {
-    //     const viewport = document.querySelector('meta[name="viewport"]');
-    //     viewport.content = "width=440, user-scalable=yes";
-    // }
-    const hasPlus = true;
-    if (isPlusOnly && !hasPlus) {
-        alert(`Access to ${title} requires Plus.`);
-        window.location.href = "/#plus";
-        return;
-    }
     {
         removeElement(helpEl);
         helpEl.style.display = "";
     }
     const app = { 
-        dailyPlusPuzzles: createDailyPlusPuzzles(genreID, genre, title, iconURL, helpEl, today, puzzleCategories, puzzlesByCategory, hasPlus), 
+        dailyPlusPuzzles: createDailyPlusPuzzles(genreID, genre, title, iconURL, helpEl, puzzleCategories, puzzlesByCategory), 
     };
     V = VDOM.create(app, App);
     V.refresh();
-}
-
-function identifierFromDate(date) {
-    return `${date.getDate()} ${date.getMonth()+1} ${date.getFullYear()}`;
-}
-
-function checkAndHandleNewDay(today) {
-    const stringToday = identifierFromDate(today);
-    const savedDateString = localStorage.getItem("daily|date");
-    if (savedDateString !== stringToday) {
-        Object.keys(localStorage).filter(k => 
-            k.startsWith("daily|")
-        ).forEach(k => {
-            localStorage.removeItem(k);
-        });
-        localStorage.setItem("daily|date", stringToday);
-    }
 }
 
 function DialogTitle({ title, closeDialogAction }) {
@@ -693,13 +664,6 @@ function createPuzzle(genreID, genre, desc, storagePrefix, getPuzzleSetInfo, onR
             V.refresh();
         },
     };
-    const navigateToMenuAction = {
-        text: () => "Menu",
-        available: () => true,
-        execute: () => {
-            window.location = "..";
-        },
-    };
     r.clockPrevTime = new Date();
     function isClockStopped() {
         return r.solved;
@@ -751,7 +715,6 @@ function createPuzzle(genreID, genre, desc, storagePrefix, getPuzzleSetInfo, onR
         revealAction,
         hintAction, 
         correctAction,
-        navigateToMenuAction,
     });
     view.refresh();
     return r;
@@ -801,7 +764,7 @@ function TitleAndIcon({ title, iconURL }) {
     };
 }
 
-function DailyPlusPuzzles({ title, iconURL, helpEl, today, sourceChoice, puzzleChoice, plusAction, puzzle, }) {
+function DailyPlusPuzzles({ title, iconURL, helpEl, puzzleChoice, puzzle, }) {
     return {
         tag: "div",
         style: {
@@ -855,7 +818,6 @@ function DailyPlusPuzzles({ title, iconURL, helpEl, today, sourceChoice, puzzleC
                         children: [
                             Button({ action: puzzle.openHelpDialogAction }),
                             Button({ action: puzzle.openSettingsDialogAction }),
-                            Button({ action: puzzle.navigateToMenuAction }),
                         ]
                     },
                 ], 
@@ -885,19 +847,9 @@ function DailyPlusPuzzles({ title, iconURL, helpEl, today, sourceChoice, puzzleC
                             "flex-wrap": "wrap",
                         },
                         children: [
-                            RadioGroup({ choice: sourceChoice }),
-                            plusAction == null ? null : Button({ action: plusAction }),
+                            // Random puzzle selection happens per refresh; only category tabs remain.
                         ]
                     },
-                    // {
-                    //     tag: "div",  
-                    //     style: {
-                    //         "flex-grow": 1,
-                    //         "height": 0,
-                    //         "padding": 0,
-                    //         "margin": 0,
-                    //     },
-                    // },
                     RadioGroup({ choice: puzzleChoice }),
                 ],
             },
@@ -915,117 +867,19 @@ function DailyPlusPuzzles({ title, iconURL, helpEl, today, sourceChoice, puzzleC
     };
 }
 
-function DailyPlusPuzzlesNew({ title, iconURL, helpEl, today, sourceChoice, puzzleChoice, plusAction, puzzle, }) {
-
-    const dateStr = today.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-    const dailyPlusCategoryTabs = {
-        tag: "div",
-        style: {
-            display: "flex",
-            "flex-direction": "row",
-            "flex-wrap": "wrap",
-            "gap": "5px",
-            "justify-content": "flex-start",
-            "align-items": "center",
-            "width": "100%",
-            "margin-top": "10px",
-            "margin-bottom": "20px",
-            
-        },
-        class: ["puzzle-select-row"],
-        children: [
-            {
-                tag: "div",
-                style: {
-                    display: "flex",
-                    "flex-direction": "row",
-                    "align-items": "center",
-                    "flex-wrap": "wrap",
-                },
-                children: [
-                    RadioGroup({ choice: sourceChoice }),
-                    plusAction == null ? null : Button({ action: plusAction }),
-                ]
-            },
-            RadioGroup({ choice: puzzleChoice }),
-        ],
-    };
-
-    return {
-        tag: "div",
-        children: [
-            {
-                tag: "div",
-                style: {
-                    display: "flex",
-                    "flex-direction": "row",
-                    "flex-wrap": "wrap",
-                    "justify-content": "space-between",
-                    "align-items": "center",
-                    "width": "100%",
-                    "margin": "0px",
-                    "padding": "5px",
-                    // "background-color": "var(--theme-glass)",
-                },
-                children: [
-                    {
-                        tag: 'div',
-                        style: {
-                            display: 'flex',
-                            'flex-direction': 'row',
-                            'align-items': 'center',
-                            'gap': '10px',
-                        },
-                        children: [
-                            Button({ 
-                                action: {
-                                    text: () => "<",
-                                    available: () => true,
-                                    execute: () => {
-                                        window.location = '..';
-                                    },
-                                }
-                            }),
-                            {
-                                tag: 'img',
-                                src: iconURL,
-                                width: "28px",
-                                height: "28px",
-                            },
-                            {
-                                tag: 'div',
-                                text: title,
-                                style: {
-                                    'font-family': 'TitleFont',
-                                    'font-size': '24px',
-                                },
-                            },
-                        ]
-                    },
-                    Button({
-                        action: {
-                            text: () => "⋮",
-                            available: () => true,
-                            execute: () => {},
-                        },
-                    }),
-                ],
-            },
-            dailyPlusCategoryTabs,
-            Puzzle({...puzzle, helpEl}),
-        ],
-    };
+function DailyPlusPuzzlesNew({ title, iconURL, helpEl, puzzleChoice, puzzle, }) {
+    // Kept only for older experiments; render the current simplified UI.
+    return DailyPlusPuzzles({ title, iconURL, helpEl, puzzleChoice, puzzle });
 }
 
-function createDailyPlusPuzzles(genreID, genre, title, iconURL, helpEl, today, puzzleCategories, puzzlesByCategory, hasPlus) {
+function createDailyPlusPuzzles(genreID, genre, title, iconURL, helpEl, puzzleCategories, puzzlesByCategory) {
     const storagePrefix = `daily|${genreID}|`;
     // Use a random seed for this page load so that each refresh gives a new
     // set of puzzles, independent of the current date.
     const randomSeed = `${Math.random()}`;
-    const hashAndSelectPuzzle = (category, dailyPlus, setNumber) => {
-        setNumber = setNumber ?? 0;
+    const hashAndSelectPuzzle = (category) => {
         const puzzleList = puzzlesByCategory[category];
-        const s = `${randomSeed} ${category} ${dailyPlus} ${setNumber}`;
+        const s = `${randomSeed} ${category}`;
         const h = cyrb53(s);
         if (genre.descFromSeed != null) {
             let desc = genre.descFromSeed(h);
@@ -1037,41 +891,7 @@ function createDailyPlusPuzzles(genreID, genre, title, iconURL, helpEl, today, p
         }
     };
 
-    const r = { genre, title, iconURL, helpEl, today, plusSetNumber: tryLoadPlusSetNumber() ?? 0 };
-    r.sourceChoice = createChoice(
-        ["Daily", "Plus"],
-        (choice) => {
-            localStorage.setItem(`${storagePrefix}sourceChoice`, choice.currentValue);
-            goToPuzzle();
-            V.refresh();
-        },
-        /*defaultValue=*/localStorage.getItem(`${storagePrefix}sourceChoice`) ?? undefined,
-        /*available=*/(value) => {
-            if (value === "Plus") { return hasPlus; }
-            return true;
-        },
-    );
-    r.plusAction = {
-        text: () => `+${r.plusSetNumber+1}`,
-        available: () => hasPlus && r.sourceChoice.currentValue === "Plus",
-        execute: () => {
-            if (confirm("Start a new set of Plus puzzles?")) {
-                r.plusSetNumber += 1;
-                savePlusSetNumber();
-                goToPuzzle();
-                V.refresh();
-            }
-        },
-    };
-    function savePlusSetNumber() {
-        localStorage.setItem(`daily|${genreID}|plusSetNumber`, JSON.stringify(r.plusSetNumber));
-    }
-    function tryLoadPlusSetNumber() {
-        const s = localStorage.getItem(`daily|${genreID}|plusSetNumber`);
-        if (s == null) { return; }
-        const n = JSON.parse(s);
-        return n;
-    }
+    const r = { genre, title, iconURL, helpEl };
     function isPuzzleSolved(desc) {
         const puzzleID = genre.getPuzzleId(desc);
         const s = localStorage.getItem(`${storagePrefix}${puzzleID}|solved`);
@@ -1089,11 +909,7 @@ function createDailyPlusPuzzles(genreID, genre, title, iconURL, helpEl, today, p
         /*defaultValue=*/localStorage.getItem(`${storagePrefix}puzzleChoice`) ?? undefined,
         /*available=*/undefined,
         function(value) {
-            const desc = hashAndSelectPuzzle(
-                value, 
-                r.sourceChoice.currentValue, 
-                r.sourceChoice.currentValue === "Daily" ? 0 : r.plusSetNumber
-            );
+            const desc = hashAndSelectPuzzle(value);
             const solved = isPuzzleSolved(desc);
             const index = r.puzzleChoice.values.indexOf(value);
             const text = `${index + 1}`;
@@ -1102,18 +918,12 @@ function createDailyPlusPuzzles(genreID, genre, title, iconURL, helpEl, today, p
     );
     r.puzzle = undefined;
     const getPuzzleSetInfo = function() {
-        const source = r.sourceChoice.currentValue;
-        const setNumber = source === "Daily" ? 0 : r.plusSetNumber;
         let anyHintUsed = false;
         let allSolved = true;
         let totalTime = 0;
         let numPuzzles = 0;
         for (const category of r.puzzleChoice.values) {
-            const desc = hashAndSelectPuzzle(
-                category, 
-                source, 
-                setNumber
-            );
+            const desc = hashAndSelectPuzzle(category);
             if (!isPuzzleSolved(desc)) {
                 allSolved = false;
             }
@@ -1131,11 +941,7 @@ function createDailyPlusPuzzles(genreID, genre, title, iconURL, helpEl, today, p
         return { numPuzzles, allSolved, totalTime, anyHintUsed, };
     };
     function goToPuzzle() {
-        const desc = hashAndSelectPuzzle(
-            r.puzzleChoice.currentValue, 
-            r.sourceChoice.currentValue, 
-            r.sourceChoice.currentValue === "Daily" ? 0 : r.plusSetNumber
-        ); 
+        const desc = hashAndSelectPuzzle(r.puzzleChoice.currentValue);
         function handleRestart() {
             goToPuzzle();
             V.refresh();
