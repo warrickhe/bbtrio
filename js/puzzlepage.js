@@ -45,7 +45,6 @@ function createDailyPuzzlePage(
     //     const viewport = document.querySelector('meta[name="viewport"]');
     //     viewport.content = "width=440, user-scalable=yes";
     // }
-    checkAndHandleNewDay(today);
     const hasPlus = true;
     if (isPlusOnly && !hasPlus) {
         alert(`Access to ${title} requires Plus.`);
@@ -803,9 +802,6 @@ function TitleAndIcon({ title, iconURL }) {
 }
 
 function DailyPlusPuzzles({ title, iconURL, helpEl, today, sourceChoice, puzzleChoice, plusAction, puzzle, }) {
-
-    const dateStr = today.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-
     return {
         tag: "div",
         style: {
@@ -838,7 +834,6 @@ function DailyPlusPuzzles({ title, iconURL, helpEl, today, sourceChoice, puzzleC
                         },
                         children: [
                             TitleAndIcon({ title, iconURL }),
-                            {tag:"div",text: dateStr, style: { "margin-left": "10px", }},
                         ],
                     },
                     {
@@ -1024,10 +1019,13 @@ function DailyPlusPuzzlesNew({ title, iconURL, helpEl, today, sourceChoice, puzz
 
 function createDailyPlusPuzzles(genreID, genre, title, iconURL, helpEl, today, puzzleCategories, puzzlesByCategory, hasPlus) {
     const storagePrefix = `daily|${genreID}|`;
-    const hashAndSelectPuzzle = (dateString, category, dailyPlus, setNumber) => {
+    // Use a random seed for this page load so that each refresh gives a new
+    // set of puzzles, independent of the current date.
+    const randomSeed = `${Math.random()}`;
+    const hashAndSelectPuzzle = (category, dailyPlus, setNumber) => {
         setNumber = setNumber ?? 0;
         const puzzleList = puzzlesByCategory[category];
-        const s = `${dateString} ${category} ${dailyPlus} ${setNumber}`;
+        const s = `${randomSeed} ${category} ${dailyPlus} ${setNumber}`;
         const h = cyrb53(s);
         if (genre.descFromSeed != null) {
             let desc = genre.descFromSeed(h);
@@ -1092,7 +1090,6 @@ function createDailyPlusPuzzles(genreID, genre, title, iconURL, helpEl, today, p
         /*available=*/undefined,
         function(value) {
             const desc = hashAndSelectPuzzle(
-                identifierFromDate(today), 
                 value, 
                 r.sourceChoice.currentValue, 
                 r.sourceChoice.currentValue === "Daily" ? 0 : r.plusSetNumber
@@ -1113,7 +1110,6 @@ function createDailyPlusPuzzles(genreID, genre, title, iconURL, helpEl, today, p
         let numPuzzles = 0;
         for (const category of r.puzzleChoice.values) {
             const desc = hashAndSelectPuzzle(
-                identifierFromDate(today), 
                 category, 
                 source, 
                 setNumber
@@ -1136,7 +1132,6 @@ function createDailyPlusPuzzles(genreID, genre, title, iconURL, helpEl, today, p
     };
     function goToPuzzle() {
         const desc = hashAndSelectPuzzle(
-            identifierFromDate(today), 
             r.puzzleChoice.currentValue, 
             r.sourceChoice.currentValue, 
             r.sourceChoice.currentValue === "Daily" ? 0 : r.plusSetNumber
