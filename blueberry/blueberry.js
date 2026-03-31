@@ -474,7 +474,7 @@ BLUEBERRY.createView = (model, state, scale, isSolution) => {
             let cellinfo = view.grid.cells[cell];
             let el = createEl({
                 tag: "image",
-                href: `../blueberry/box.${graphics_ext}`,
+                href: `./blueberry/box.${graphics_ext}`,
                 width: cellSize,
                 height: cellSize,
                 x: cellinfo.center[0] - cellSize/2,
@@ -497,8 +497,8 @@ BLUEBERRY.createView = (model, state, scale, isSolution) => {
         let el = createEl({
             tag: "image",
             href: model.options.pairRuleEnabled ? 
-                `../blueberry/cherry.${graphics_ext}` : 
-                `../blueberry/berry.${graphics_ext}`,
+                `./blueberry/cherry.${graphics_ext}` : 
+                `./blueberry/berry.${graphics_ext}`,
             width: cellSize,
             height: cellSize,
             x: cellinfo.center[0] - cellSize/2,
@@ -553,8 +553,8 @@ BLUEBERRY.createView = (model, state, scale, isSolution) => {
     }
     if (!model.options.hideSameNPips && model.options.sameNPerRowCol != null) {
         const berryURL = model.options.pairRuleEnabled ? 
-            `../blueberry/cherry.${graphics_ext}` : 
-            `../blueberry/berry.${graphics_ext}`;
+            `./blueberry/cherry.${graphics_ext}` : 
+            `./blueberry/berry.${graphics_ext}`;
         let w = view.berryRadius * 2 * 1.5;
         let spacing = w * 0.65;
         for (let i of integers(1, model.options.sameNPerRowCol)) {
