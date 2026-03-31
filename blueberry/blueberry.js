@@ -395,7 +395,6 @@ BLUEBERRY.getPuzzleId = (desc) => {
     return desc;
 };
 BLUEBERRY.createView = (model, state, scale, isSolution) => {
-    const graphics_folder = 'assets';
     const graphics_ext = 'png';
     scale = scale ?? 1;
     scale *= 1.25;
@@ -475,7 +474,7 @@ BLUEBERRY.createView = (model, state, scale, isSolution) => {
             let cellinfo = view.grid.cells[cell];
             let el = createEl({
                 tag: "image",
-                href: `../blueberry/${graphics_folder}/box.${graphics_ext}`,
+                href: `../blueberry/box.${graphics_ext}`,
                 width: cellSize,
                 height: cellSize,
                 x: cellinfo.center[0] - cellSize/2,
@@ -498,8 +497,8 @@ BLUEBERRY.createView = (model, state, scale, isSolution) => {
         let el = createEl({
             tag: "image",
             href: model.options.pairRuleEnabled ? 
-                `../blueberry/${graphics_folder}/cherry.${graphics_ext}` : 
-                `../blueberry/${graphics_folder}/berry.${graphics_ext}`,
+                `../blueberry/cherry.${graphics_ext}` : 
+                `../blueberry/berry.${graphics_ext}`,
             width: cellSize,
             height: cellSize,
             x: cellinfo.center[0] - cellSize/2,
@@ -554,8 +553,8 @@ BLUEBERRY.createView = (model, state, scale, isSolution) => {
     }
     if (!model.options.hideSameNPips && model.options.sameNPerRowCol != null) {
         const berryURL = model.options.pairRuleEnabled ? 
-            `../blueberry/${graphics_folder}/cherry.${graphics_ext}` : 
-            `../blueberry/${graphics_folder}/berry.${graphics_ext}`;
+            `../blueberry/cherry.${graphics_ext}` : 
+            `../blueberry/berry.${graphics_ext}`;
         let w = view.berryRadius * 2 * 1.5;
         let spacing = w * 0.65;
         for (let i of integers(1, model.options.sameNPerRowCol)) {
